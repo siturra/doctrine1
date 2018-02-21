@@ -2,7 +2,7 @@
     "name": "siturra/doctrine1-php7",
     "type": "library",
     "description": "PHP7 Database ORM Doctrine 1",
-    "keywords": ["orm", "database", "doctrine1", "php7],
+    "keywords": ["orm", "database", "doctrine1", "php7"],
     "homepage": "http://www.doctrine-project.org",
     "license": "LGPL",
     "authors": [
