@@ -72,12 +72,14 @@ class Doctrine_Pager
      */
     protected $_executed;
 
+    protected $_countExecuted;
+
 
 
     /**
      * __construct
      *
-     * @param mixed $query     Accepts either a Doctrine_Query object or a string 
+     * @param mixed $query     Accepts either a Doctrine_Query object or a string
      *                        (which does the Doctrine_Query class creation).
      * @param int $page     Current page
      * @param int $maxPerPage     Maximum itens per page
@@ -86,6 +88,7 @@ class Doctrine_Pager
     public function __construct($query, $page, $maxPerPage = 0)
     {
         $this->_setExecuted(false);
+        $this->_setCountExecuted(false);
 
         $this->_setQuery($query);
         $this->_setPage($page);
@@ -108,7 +111,7 @@ class Doctrine_Pager
         $count = $countQuery->count($this->getCountQueryParams($params));
 
         $this->_setNumResults($count);
-        $this->_setExecuted(true); // _adjustOffset relies of _executed equals true = getNumResults()
+        $this->_setCountExecuted(true);
 
         $this->_adjustOffset();
     }
@@ -146,6 +149,11 @@ class Doctrine_Pager
         return $this->_executed;
     }
 
+    public function getCountExecuted()
+    {
+        return $this->_countExecuted;
+    }
+
     /**
      * _setExecuted
      *
@@ -157,6 +165,11 @@ class Doctrine_Pager
     protected function _setExecuted($executed)
     {
         $this->_executed = $executed;
+    }
+
+    protected function _setCountExecuted($executed)
+    {
+        $this->_countExecuted = $executed;
     }
 
     /**
@@ -185,7 +198,7 @@ class Doctrine_Pager
      */
     public function getNumResults()
     {
-        if ($this->getExecuted()) {
+        if ($this->getCountExecuted()) {
             return $this->_numResults;
         }
 
@@ -442,7 +455,7 @@ class Doctrine_Pager
      *
      * Defines the collector query to be used by pager
      *
-     * @param Doctrine_Query     Accepts either a Doctrine_Query object or a string 
+     * @param Doctrine_Query     Accepts either a Doctrine_Query object or a string
      *                           (which does the Doctrine_Query class creation).
      * @return void
      */
@@ -473,9 +486,9 @@ class Doctrine_Pager
      *
      * Defines the counter query to be used by pager
      *
-     * @param Doctrine_Query  Accepts either a Doctrine_Query object or a string 
+     * @param Doctrine_Query  Accepts either a Doctrine_Query object or a string
      *                        (which does the Doctrine_Query class creation).
-     * @param array           Optional params to be used by counter Doctrine_Query. 
+     * @param array           Optional params to be used by counter Doctrine_Query.
      *                        If not defined, the params passed to execute method will be used.
      * @return void
      */
@@ -491,6 +504,7 @@ class Doctrine_Pager
         $this->setCountQueryParams($params);
 
         $this->_setExecuted(false);
+        $this->_setCountExecuted(false);
     }
 
     /**
@@ -510,7 +524,7 @@ class Doctrine_Pager
      *
      * Defines the params to be used by counter Doctrine_Query
      *
-     * @param array       Optional params to be used by counter Doctrine_Query. 
+     * @param array       Optional params to be used by counter Doctrine_Query.
      *                    If not defined, the params passed to execute method will be used.
      * @param boolean     Optional argument that append the query param instead of overriding the existent ones.
      * @return void
@@ -528,6 +542,7 @@ class Doctrine_Pager
         }
 
         $this->_setExecuted(false);
+        $this->_setCountExecuted(false);
     }
 
     /**
@@ -541,10 +556,21 @@ class Doctrine_Pager
      */
     public function execute($params = array(), $hydrationMode = null)
     {
-        if ( !$this->getExecuted()) {
+        if ( !$this->getCountExecuted()) {
+            $this->_initialize($params);
+        } else {
+            $this->_adjustOffset();
+        }
+
+        $this->_setExecuted(true);
+
+        return $this->getQuery()->execute($params, $hydrationMode);
+    }
+
+    public function executeCount($params = array())
+    {
+        if ( !$this->getCountExecuted()) {
             $this->_initialize($params);
         }
-        
-        return $this->getQuery()->execute($params, $hydrationMode);
     }
 }

@@ -1013,7 +1013,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
 
                 if ( ! $event->skipOperation) {
                     $stmt = $this->dbh->query($query);
-                    $this->_count++;
+                    $this->incrementQueryCount();
                 }
                 $this->getAttribute(Doctrine_Core::ATTR_LISTENER)->postQuery($event);
 
@@ -1048,8 +1048,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
                 $this->getAttribute(Doctrine_Core::ATTR_LISTENER)->preExec($event);
                 if ( ! $event->skipOperation) {
                     $count = $this->dbh->exec($query);
-
-                    $this->_count++;
+                    $this->incrementQueryCount();
                 }
                 $this->getAttribute(Doctrine_Core::ATTR_LISTENER)->postExec($event);
 

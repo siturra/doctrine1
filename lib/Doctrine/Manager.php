@@ -472,6 +472,29 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                 break;
 
             case 'mysql':
+                if ( ! isset($parts['path']) || $parts['path'] == '/') {
+                    throw new Doctrine_Manager_Exception('No database available in data source name');
+                }
+                if (isset($parts['path'])) {
+                    $parts['database'] = substr($parts['path'], 1);
+                }
+                if ( ! isset($parts['host'])) {
+                    throw new Doctrine_Manager_Exception('No hostname set in data source name');
+                }
+
+                $parts['dsn'] = $parts['scheme'] . ':host='
+                              . $parts['host'] . (isset($parts['port']) ? ';port=' . $parts['port']:null) . ';dbname='
+                              . $parts['database'];
+
+                if (!empty($parts['query'])) {
+                    parse_str($parts['query'], $queryParts);
+                    if (isset($queryParts['charset'])) {
+                        $parts['dsn'] .= ';charset=' . $queryParts['charset'];
+                        unset($queryParts['charset']);
+                        $parts['query'] = http_build_query($queryParts);
+                    }
+                }
+                break;
             case 'oci8':
             case 'oci':
             case 'pgsql':

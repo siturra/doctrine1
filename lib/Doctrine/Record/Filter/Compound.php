@@ -56,15 +56,18 @@ class Doctrine_Record_Filter_Compound extends Doctrine_Record_Filter
     public function filterSet(Doctrine_Record $record, $name, $value)
     {
         foreach ($this->_aliases as $alias) {
+            $relation = $record[$alias];
+
             if ( ! $record->exists()) {
-                if (isset($record[$alias][$name])) {
-                    $record[$alias][$name] = $value;
+
+                if (isset($relation[$name])) {
+                    $relation[$name] = $value;
                     
                     return $record;
                 }
             } else {
-                if (isset($record[$alias][$name])) {
-                    $record[$alias][$name] = $value;
+                if (isset($relation[$name])) {
+                    $relation[$name] = $value;
                 }
 
                 return $record;

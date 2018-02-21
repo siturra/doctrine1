@@ -42,9 +42,9 @@ abstract class Doctrine_Query_Condition extends Doctrine_Query_Part
     public function parse($str)
     {
         $tmp = trim($str);
-        
+
         $parts = $this->_tokenizer->bracketExplode($str, array(' OR '), '(', ')');
-        
+
         if (count($parts) > 1) {
             $ret = array();
             foreach ($parts as $part) {
@@ -69,7 +69,7 @@ abstract class Doctrine_Query_Condition extends Doctrine_Query_Part
                     $tmp[] = $parts[$i];
                 }
             }
-            
+
             $parts = $tmp;
             unset($tmp);
 
@@ -82,11 +82,11 @@ abstract class Doctrine_Query_Condition extends Doctrine_Query_Part
                 $r = implode(' AND ', $ret);
             } else {
                 // Fix for #710
-                if (substr($parts[0],0,1) == '(' && substr($parts[0], -1) == ')') {
+                if (substr($parts[0], 0, 1) == '(' && substr($parts[0], -1) == ')') {
                     return $this->parse(substr($parts[0], 1, -1));
                 } else {
                     // Processing NOT here
-                    if (strtoupper(substr($parts[0], 0, 4)) === 'NOT ') {
+                    if (strtoupper(substr($parts[0], 0, 4)) === 'NOT ' && strtoupper(substr($parts[0], 4, 6)) !== 'EXISTS') {
                         $r = 'NOT ('.$this->parse(substr($parts[0], 4)).')';
                     } else {
                         return $this->load($parts[0]);
@@ -94,7 +94,7 @@ abstract class Doctrine_Query_Condition extends Doctrine_Query_Part
                 }
             }
         }
-        
+
         return '(' . $r . ')';
     }
 
@@ -118,12 +118,12 @@ abstract class Doctrine_Query_Condition extends Doctrine_Query_Part
             $a = explode('.', $value);
 
             if (count($a) > 1) {
-            // either a float or a component..
+                // either a float or a component..
 
                 if ( ! is_numeric($a[0])) {
                     // a component found
                     $field     = array_pop($a);
-                	$reference = implode('.', $a);
+                    $reference = implode('.', $a);
                     $value     = $this->query->getConnection()->quoteIdentifier(
                         $this->query->getSqlTableAlias($reference). '.' . $field
                     );
