@@ -8,7 +8,7 @@
     "authors": [
         {"name": "Konsta Vesterinen", "email": "kvesteri@cc.hut.fi"},
         {"name": "Jonathan Wage", "email": "jonwage@gmail.com"},
-        {"name": "Sebastian Iturra", "email": "iturra.sebastian@hotmail.com"},
+        {"name": "Sebastian Iturra", "email": "iturra.sebastian@hotmail.com"}
     ],
     "require": {
         "php": ">=7.0",
